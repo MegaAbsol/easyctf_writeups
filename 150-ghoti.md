@@ -1,5 +1,9 @@
 # 150 - Ghoti
 
+*Written by Michael Zhang*
+
+*Writeup by Jester*
+
 ## Problem
 
 Haaaalppp I can't pronounce this word. What could this image mean?

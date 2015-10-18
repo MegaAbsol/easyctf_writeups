@@ -1,5 +1,9 @@
 # 80 - Easy As CTF Gets
 
+*Written by Emily Leng*
+
+*Writeup by Jester*
+
 ## Problem
 
 What could this possibly mean?
