@@ -4,68 +4,60 @@
 
 ## Problem
 
-Looks like you need to find the password that is the flag from this binary.
+Hmm this program seems to encrypt a statement depending on your input. Can you reverse it to get the original statement?
 
-`/problems/reversing1`
+`/problems/reversing2` on the shell server.
 
 ## Hint
 
-I bet the flag is stored as a string... how can we see all the strings in a binary?
+What happens when you change what you input?
 
 ## Solution
 
-```bash
-login as: user37142
-user37142@shell.easyctf.com's password:
+Well, the problem is down now, but you can still download the files:
+https://dl.dropboxusercontent.com/u/51666491/ShareX/2015/10/reversing2.zip
+(Note: the c++ source is there too which makes it a bit easier)
+(Note: that binary doesn't really work so do a g++ on the source)
+First, we run the program. We are prompted with 2 inputs. If we put a non-integer into those inputs, we get back a lot of "a"s. Not really interesting.
 
-user37142@easyctf:~$ cd /problems/reversing1
-user37142@easyctf:/problems/reversing1$ strings reversing1
-/lib64/ld-linux-x86-64.so.2
-CyIk
-libstdc++.so.6
-__gmon_start__
-_Jv_RegisterClasses
-_ITM_deregisterTMCloneTable
-_ITM_registerTMCloneTable
-__pthread_key_create
-_ZNSsD1Ev
-_ZNSt8ios_base4InitD1Ev
-_ZNSsC1EPKcRKSaIcE
-_ZNSaIcEC1Ev
-_ZSt3cin
-_ZStrsIcSt11char_traitsIcESaIcEERSt13basic_istreamIT_T0_ES7_RSbIS4_S5_T1_E
-_ZNKSs7compareERKSs
-__gxx_personality_v0
-_ZSt4cout
-_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc
-_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_
-_ZNSaIcED1Ev
-_ZNSsC1Ev
-_ZNSolsEPFRSoS_E
-_ZNSt8ios_base4InitC1Ev
-libgcc_s.so.1
-_Unwind_Resume
-libc.so.6
-__cxa_atexit
-__libc_start_main
-GCC_3.0
-GLIBC_2.2.5
-CXXABI_1.3
-GLIBCXX_3.4
-[]A\A]A^A_
-eeeeeeeeeeeeeEeesy_ctf
-Enter the password to continue.
-Yay, you got the right flag!
-Darn, you didn't get the right flag.
-;*3$"
-zPLR
+But, when we put a number for both of them, cool things happen. After playing around with those numbers for a while, we notice that the first number seems to be a "skip" value, and the second number seems to be which number we should start at.
+
+With this, we can determine the original string (by putting 1 and then 0):
+`aararShgoho biprrmup  pd0aomirwish ear lcoextoentit ey'kltiosr.'g get Vsose e'dt  llcsnhhf u  sxlerfhler e aSt.stht  ooe `.
+Well, that's not the flag. Let's reverse the program and brute force it in python!
+```python
+s = "aararShgoho biprrmup  pd0aomirwish ear lcoextoentit ey'kltiosr.'g get Vsose e'dt  llcsnhhf u  sxlerfhler e aSt.stht  ooe "
+def decode(s,a,b):
+    i = 0
+    pos = b
+    out = ""
+    for i in range(len(s)):
+        out += s[pos]
+        pos += a
+        pos %= len(s)
+    return out
+for i in range(1,len(s)):
+    for start in range(i):
+        decrypted = decode(s, i, start)
+        if '. ' in decrypted:
+            print(decrypted, i, start)
+        
 ```
+We can assume the plaintext had spaces after periods, since everyone has good grammar :3
+After running, we get some readable text with a skip of 19, but it makes no cohesive sense. Let's try putting 19 back in the program.
 
-One of those strings looks really suspicious.
+```
+./reversing2_1
+> 19
+> 0
+ap text with apostrophes that'll make things a li'l bit harder for you.google url shortener code is VfSS0x. here's some cr
+```
+:O so now we know the plaintext was `google url shortener code is VfSS0x. here's some crap text with apostrophes that'll make things a li'l bit harder for you.`.
+So now we go to `https://goo.gl/VfSS0x`. Evidently this link is now broken, but it led to a minecraft world and the flag was something like `notch is proud`. Pay to win much?
 
 ## Flag
 
-`eeeeeeeeeeeeeEeesy_ctf`
+`notch is proud`
 
 
 
